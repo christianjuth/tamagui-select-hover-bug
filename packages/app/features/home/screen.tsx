@@ -1,148 +1,177 @@
-import {
-  Anchor,
-  Button,
-  H1,
-  Paragraph,
-  Separator,
-  Sheet,
-  useToastController,
-  SwitchThemeButton,
-  SwitchRouterButton,
-  XStack,
-  YStack,
-} from '@my/ui'
-import { ChevronDown, ChevronUp, X } from '@tamagui/lucide-icons'
-import { useState } from 'react'
-import { Platform } from 'react-native'
-import { useLink } from 'solito/navigation'
+import React from 'react'
+import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 
-export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
-  const linkTarget = pagesMode ? '/pages-example-user' : '/user'
-  const linkProps = useLink({
-    href: `${linkTarget}/nate`,
-  })
+import type { FontSizeTokens, SelectProps } from 'tamagui'
+import { Adapt, Label, Select, Sheet, XStack, YStack, getFontSize } from 'tamagui'
+import { LinearGradient } from 'tamagui/linear-gradient'
 
+export function SelectDemo() {
   return (
-    <YStack
-      f={1}
-      jc="center"
-      ai="center"
-      gap="$8"
-      p="$4"
-      bg="$background"
-    >
-      <XStack
-        pos="absolute"
-        w="100%"
-        t="$6"
-        gap="$6"
-        jc="center"
-        fw="wrap"
-        $sm={{ pos: 'relative', t: 0 }}
-      >
-        {Platform.OS === 'web' && (
-          <>
-            <SwitchRouterButton pagesMode={pagesMode} />
-            <SwitchThemeButton />
-          </>
-        )}
+    <YStack gap="$4">
+      <XStack ai="center" gap="$4">
+        <Label htmlFor="select-demo-1" f={1} miw={80}>
+          Custom
+        </Label>
+        <SelectDemoItem id="select-demo-1" />
       </XStack>
 
-      <YStack gap="$4">
-        <H1
-          ta="center"
-          col="$color12"
-        >
-          Welcome to Tamagui.
-        </H1>
-        <Paragraph
-          col="$color10"
-          ta="center"
-        >
-          Here's a basic starter to show navigating from one screen to another.
-        </Paragraph>
-        <Separator />
-        <Paragraph ta="center">
-          This screen uses the same code on Next.js and React Native.
-        </Paragraph>
-        <Separator />
-      </YStack>
-
-      <Button {...linkProps}>Link to user</Button>
-
-      <SheetDemo />
+      <XStack ai="center" gap="$4">
+        <Label htmlFor="select-demo-2" f={1} miw={80}>
+          Native
+        </Label>
+        <SelectDemoItem id="select-demo-2" native />
+      </XStack>
     </YStack>
   )
 }
 
-function SheetDemo() {
-  const toast = useToastController()
-
-  const [open, setOpen] = useState(false)
-  const [position, setPosition] = useState(0)
+export function SelectDemoItem(props: SelectProps) {
+  const [val, setVal] = React.useState('apple')
 
   return (
-    <>
-      <Button
-        size="$6"
-        icon={open ? ChevronDown : ChevronUp}
-        circular
-        onPress={() => setOpen((x) => !x)}
-      />
-      <Sheet
-        modal
-        animation="medium"
-        open={open}
-        onOpenChange={setOpen}
-        snapPoints={[80]}
-        position={position}
-        onPositionChange={setPosition}
-        dismissOnSnapToBottom
-      >
-        <Sheet.Overlay
-          animation="lazy"
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-        <Sheet.Handle bg="$gray8" />
-        <Sheet.Frame
-          ai="center"
-          jc="center"
-          gap="$10"
-          bg="$color2"
-        >
-          <XStack gap="$2">
-            <Paragraph ta="center">Made by</Paragraph>
-            <Anchor
-              col="$blue10"
-              href="https://twitter.com/natebirdman"
-              target="_blank"
-            >
-              @natebirdman,
-            </Anchor>
-            <Anchor
-              color="$purple10"
-              href="https://github.com/tamagui/tamagui"
-              target="_blank"
-              rel="noreferrer"
-            >
-              give it a ⭐️
-            </Anchor>
-          </XStack>
+    <Select value={val} onValueChange={setVal} disablePreventBodyScroll {...props}>
+      <Select.Trigger width={220} iconAfter={ChevronDown}>
+        <Select.Value placeholder="Something" />
+      </Select.Trigger>
 
-          <Button
-            size="$6"
-            circular
-            icon={ChevronDown}
-            onPress={() => {
-              setOpen(false)
-              toast.show('Sheet closed!', {
-                message: 'Just showing how toast works...',
-              })
-            }}
+      <Adapt when="sm" platform="touch">
+        <Sheet
+          native={!!props.native}
+          modal
+          dismissOnSnapToBottom
+          animationConfig={{
+            type: 'spring',
+            damping: 20,
+            mass: 1.2,
+            stiffness: 250,
+          }}
+        >
+          <Sheet.Frame>
+            <Sheet.ScrollView>
+              <Adapt.Contents />
+            </Sheet.ScrollView>
+          </Sheet.Frame>
+          <Sheet.Overlay
+            animation="lazy"
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
           />
-        </Sheet.Frame>
-      </Sheet>
-    </>
+        </Sheet>
+      </Adapt>
+
+      <Select.Content zIndex={200000}>
+        <Select.ScrollUpButton
+          alignItems="center"
+          justifyContent="center"
+          position="relative"
+          width="100%"
+          height="$3"
+        >
+          <YStack zIndex={10}>
+            <ChevronUp size={20} />
+          </YStack>
+          <LinearGradient
+            start={[0, 0]}
+            end={[0, 1]}
+            fullscreen
+            colors={['$background', 'transparent']}
+            borderRadius="$4"
+          />
+        </Select.ScrollUpButton>
+
+        <Select.Viewport
+          // to do animations:
+          // animation="quick"
+          // animateOnly={['transform', 'opacity']}
+          // enterStyle={{ o: 0, y: -10 }}
+          // exitStyle={{ o: 0, y: 10 }}
+          minWidth={200}
+        >
+          <Select.Group>
+            <Select.Label>Fruits</Select.Label>
+            {/* for longer lists memoizing these is useful */}
+            {React.useMemo(
+              () =>
+                items.map((item, i) => {
+                  return (
+                    <Select.Item
+                      index={i}
+                      key={item.name}
+                      value={item.name.toLowerCase()}
+                    >
+                      <Select.ItemText>{item.name}</Select.ItemText>
+                      <Select.ItemIndicator marginLeft="auto">
+                        <Check size={16} />
+                      </Select.ItemIndicator>
+                    </Select.Item>
+                  )
+                }),
+              [items]
+            )}
+          </Select.Group>
+          {/* Native gets an extra icon */}
+          {props.native && (
+            <YStack
+              position="absolute"
+              right={0}
+              top={0}
+              bottom={0}
+              alignItems="center"
+              justifyContent="center"
+              width={'$4'}
+              pointerEvents="none"
+            >
+              <ChevronDown
+                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+              />
+            </YStack>
+          )}
+        </Select.Viewport>
+
+        <Select.ScrollDownButton
+          alignItems="center"
+          justifyContent="center"
+          position="relative"
+          width="100%"
+          height="$3"
+        >
+          <YStack zIndex={10}>
+            <ChevronDown size={20} />
+          </YStack>
+          <LinearGradient
+            start={[0, 0]}
+            end={[0, 1]}
+            fullscreen
+            colors={['transparent', '$background']}
+            borderRadius="$4"
+          />
+        </Select.ScrollDownButton>
+      </Select.Content>
+    </Select>
   )
 }
+
+const items = [
+  { name: 'Apple' },
+  { name: 'Pear' },
+  { name: 'Blackberry' },
+  { name: 'Peach' },
+  { name: 'Apricot' },
+  { name: 'Melon' },
+  { name: 'Honeydew' },
+  { name: 'Starfruit' },
+  { name: 'Blueberry' },
+  { name: 'Raspberry' },
+  { name: 'Strawberry' },
+  { name: 'Mango' },
+  { name: 'Pineapple' },
+  { name: 'Lime' },
+  { name: 'Lemon' },
+  { name: 'Coconut' },
+  { name: 'Guava' },
+  { name: 'Papaya' },
+  { name: 'Orange' },
+  { name: 'Grape' },
+  { name: 'Jackfruit' },
+  { name: 'Durian' },
+]

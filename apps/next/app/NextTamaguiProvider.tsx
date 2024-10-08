@@ -13,7 +13,7 @@ import { config } from '@my/ui'
 import { Provider } from 'app/provider'
 
 export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
-  const [theme, setTheme] = useRootTheme()
+  // const [theme, setTheme] = useRootTheme()
 
   useServerInsertedHTML(() => {
     // @ts-ignore
@@ -68,12 +68,13 @@ export const NextTamaguiProvider = ({ children }: { children: ReactNode }) => {
       // change default theme (system) here:
       // defaultTheme="dark"
       onChangeTheme={(next) => {
-        setTheme(next as any)
+        // setTheme(next as any)
       }}
+      forcedTheme="dark"
     >
       <Provider
         disableRootThemeClass
-        defaultTheme={theme}
+        defaultTheme="dark"
       >
         {children}
       </Provider>

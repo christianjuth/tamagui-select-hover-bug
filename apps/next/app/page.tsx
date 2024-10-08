@@ -1,5 +1,5 @@
 'use client'
 
-import { HomeScreen } from 'app/features/home/screen'
+import { SelectDemo } from 'app/features/home/screen'
 
-export default HomeScreen
+export default SelectDemo
